@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+}
+
+group 'org.jniemiec'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+task cucumber() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'pretty', '--glue', 'org.jniemiec.screeanureads', 'src/test/resources']
+        }
+    }
+}
+
+dependencies {
+
+    // Tesseract
+    implementation 'net.sourceforge.tess4j:tess4j:3.2.1'
+    // implementation 'org.bytedeco.javacpp-presets:tesseract:3.03-rc1-0.11'
+
+    // Apache Commons Lang
+    implementation 'org.apache.commons:commons-lang3:3.0'
+
+    // Cucumber
+    testImplementation 'io.cucumber:cucumber-java:latest.release'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:latest.release'
+
+    // JUnit
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    // Hamcrest
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+
+}
+
+test {
+    useJUnitPlatform()
+}
